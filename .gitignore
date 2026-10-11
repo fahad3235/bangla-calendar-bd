@@ -1,0 +1,18 @@
+# Dependencies / local test tooling (never commit)
+node_modules/
+package-lock.json
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor junk
+*.swp
+*~
+.vscode/
+.idea/
+
+# Test screenshots / scratch (keep in /tmp instead)
+*.png
+*.jpg

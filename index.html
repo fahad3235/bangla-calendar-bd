@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>বাংলা ক্যালেন্ডার | Bangla Calendar BD</title>
+<meta name="description" content="বাংলা বর্ষপঞ্জি (বঙ্গাব্দ): তারিখ রূপান্তর, মাসের ক্যালেন্ডার, ২০২৬ সালের সরকারি ছুটি ও ঋতু — সম্পূর্ণ অফলাইন।">
+<style>
+:root{
+  --cream:#FFF9EE; --paper:#FFFDF7; --red:#A31621; --deep:#701016;
+  --gold:#C9971F; --gold-soft:#F5E7C1; --terra:#C65D3B; --ink:#3B2A1A;
+  --muted:#8A6F52; --line:#E8D9BE; --fri:#FDEBE2;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:"Noto Sans Bengali","Hind Siliguri","SolaimanLipi","Nirmala UI",system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.6}
+header.topbar{background:linear-gradient(135deg,var(--deep),var(--red));color:#fff;padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  border-bottom:4px solid var(--gold)}
+.brand h1{margin:0;font-size:1.5rem;letter-spacing:.5px}
+.brand p{margin:2px 0 0;font-size:.85rem;color:var(--gold-soft)}
+.lang-toggle{background:transparent;border:2px solid var(--gold);color:#fff;border-radius:999px;
+  padding:8px 18px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit}
+.lang-toggle:hover{background:var(--gold);color:var(--deep)}
+main{max-width:1060px;margin:0 auto;padding:18px 14px 40px}
+section.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+  padding:20px;margin:18px 0;box-shadow:0 2px 10px rgba(163,22,33,.06)}
+section.card h2{margin:0 0 4px;color:var(--red);font-size:1.3rem;border-bottom:2px solid var(--gold-soft);padding-bottom:8px}
+section.card .sub{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+/* hero */
+.hero{background:linear-gradient(160deg,#FFFDF7 60%,#FDF3DC);border:2px solid var(--gold);border-radius:16px;
+  padding:26px 22px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;
+  background:repeating-linear-gradient(90deg,var(--red) 0 24px,var(--gold) 24px 48px)}
+.hero .kicker{display:inline-block;background:var(--red);color:#fff;font-size:.8rem;font-weight:700;
+  padding:4px 14px;border-radius:999px;margin-bottom:10px}
+.hero-bangla{font-size:2.6rem;font-weight:800;color:var(--red);margin:6px 0;line-height:1.25}
+.hero-sub{font-size:1.05rem;color:var(--ink)}
+.hero-season{margin-top:12px;font-size:1.15rem;font-weight:700;color:var(--deep);
+  background:var(--gold-soft);display:inline-block;padding:8px 20px;border-radius:999px}
+/* fun facts */
+.facts{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 10px}
+.fact{flex:0 0 auto;background:var(--paper);border:1px dashed var(--terra);border-radius:10px;
+  padding:8px 14px;font-size:.92rem;white-space:nowrap}
+.fact b{color:var(--red)}
+/* converter */
+.conv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.conv-grid{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff}
+.panel h3{margin:0 0 12px;color:var(--deep);font-size:1.05rem}
+label{display:block;font-size:.85rem;font-weight:700;margin:10px 0 4px;color:var(--muted)}
+input,select{width:100%;padding:10px 12px;font-size:1rem;border:1.5px solid var(--line);
+  border-radius:8px;font-family:inherit;background:#fff;color:var(--ink);max-width:100%}
+input:focus,select:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+button.go{margin-top:14px;background:var(--red);color:#fff;border:none;border-radius:8px;
+  padding:11px 22px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
+button.go:hover{background:var(--deep)}
+.result{margin-top:14px;padding:14px;border-radius:10px;background:var(--cream);border:1px solid var(--line);min-height:74px}
+.result.empty{color:var(--muted);font-size:.92rem;display:flex;align-items:center;justify-content:center;text-align:center}
+.result .big{font-size:1.5rem;font-weight:800;color:var(--red)}
+.result .meta{font-size:.95rem;margin-top:4px}
+.error{color:#fff;background:#B3261E;border-radius:8px;padding:10px 12px;margin-top:12px;font-size:.92rem}
+/* calendar */
+.cal-controls{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.cal-controls select{width:auto;flex:1;min-width:120px}
+.cal-controls button{background:var(--paper);border:1.5px solid var(--gold);color:var(--deep);
+  border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.95rem}
+.cal-controls button:hover{background:var(--gold-soft)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cell{min-height:52px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:.98rem;position:relative;background:#fff;border:1px solid var(--line);padding:4px 2px}
+.cell.wd{background:none;border:none;font-weight:800;color:var(--red);min-height:30px;font-size:.85rem}
+.cell.wd.fri{color:var(--terra)}
+.cell.blank{background:none;border:none}
+.cell.day.fri{background:var(--fri)}
+.cell.day.today{outline:3px solid var(--gold);outline-offset:-3px;font-weight:800}
+.cell .dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:3px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:.85rem;color:var(--muted)}
+.legend .sw{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+/* holidays */
+.countdown{background:linear-gradient(135deg,var(--red),var(--terra));color:#fff;border-radius:12px;
+  padding:16px 18px;margin-bottom:16px;text-align:center}
+.countdown .big{font-size:1.25rem;font-weight:800}
+.countdown .when{color:var(--gold-soft)}
+.hol-list{display:grid;gap:8px}
+.hol-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff}
+.hol-row .name{font-weight:700}
+.hol-row .name .bn{color:var(--red)}
+.hol-row .dates{font-size:.88rem;color:var(--muted);text-align:right}
+.eo{display:inline-block;font-size:.72rem;background:var(--gold-soft);color:var(--deep);
+  border-radius:999px;padding:2px 10px;margin-left:8px;font-weight:700;vertical-align:middle}
+.footnote{margin-top:14px;font-size:.82rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+/* seasons */
+.season-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:640px){.season-grid{grid-template-columns:repeat(2,1fr)}}
+.season{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.season .em{font-size:2rem}
+.season .bn{font-size:1.15rem;font-weight:800;color:var(--red)}
+.season .en{font-size:.9rem;color:var(--muted)}
+.season .mon{font-size:.85rem;margin-top:6px}
+.season .gr{font-size:.78rem;color:var(--muted)}
+footer{border-top:4px solid var(--gold);background:var(--deep);color:var(--gold-soft);
+  padding:20px 18px;font-size:.85rem}
+footer .wrap{max-width:1060px;margin:0 auto}
+footer a{color:var(--gold)}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1 data-i18n="appTitle">বাংলা ক্যালেন্ডার বিডি</h1>
+    <p data-i18n="tagline">সংশোধিত জাতীয় বাংলা বর্ষপঞ্জি (বঙ্গাব্দ), ছুটির দিন ও ঋতু</p>
+  </div>
+  <button class="lang-toggle" id="lang-toggle" aria-label="Language">EN</button>
+</header>
+
+<main>
+  <section class="hero" aria-label="today">
+    <span class="kicker" data-i18n="today">আজ</span>
+    <div class="hero-bangla" id="hero-bangla-date">…</div>
+    <div class="hero-sub" id="hero-bangla-weekday">…</div>
+    <div class="hero-sub" id="hero-gregorian">…</div>
+    <div><span class="hero-season" id="hero-season">…</span></div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="funFactsTitle">জানেন কি?</h2>
+    <p class="sub" data-i18n="funFactsSub">ইতিহাসের বিখ্যাত তারিখগুলোর বাংলা রূপ</p>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="convTitle">তারিখ রূপান্তর</h2>
+    <p class="sub" data-i18n="convSub">গ্রেগরীয় ↔ বাংলা — দুই দিকেই যাচাইকৃত গণিত</p>
+    <div class="conv-grid">
+      <div class="panel">
+        <h3 data-i18n="g2bTitle">গ্রেগরীয় → বাংলা</h3>
+        <label for="g-date" data-i18n="gregDateLabel">গ্রেগরীয় তারিখ</label>
+        <input type="date" id="g-date" min="1900-01-01" max="2100-12-31" value="2026-02-21">
+        <button class="go" id="g2b-btn" data-i18n="convertBtn">রূপান্তর করুন</button>
+        <div class="result empty" id="g2b-result" data-i18n="emptyConvert">তারিখ দিয়ে রূপান্তর চাপুন।</div>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="b2gTitle">বাংলা → গ্রেগরীয়</h3>
+        <label for="b-month" data-i18n="banglaMonthLabel">বাংলা মাস</label>
+        <select id="b-month"></select>
+        <label for="b-day" data-i18n="banglaDayLabel">দিন</label>
+        <input type="number" id="b-day" min="1" max="31" value="1">
+        <label for="b-year" data-i18n="banglaYearLabel">বাংলা বছর</label>
+        <input type="number" id="b-year" min="1300" max="1510" value="1433">
+        <button class="go" id="b2g-btn" data-i18n="convertBtn">রূপান্তর করুন</button>
+        <div class="result empty" id="b2g-result" data-i18n="emptyConvert">তারিখ দিয়ে রূপান্তর চাপুন।</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="calTitle">বাংলা মাসের ক্যালেন্ডার</h2>
+    <p class="sub" data-i18n="calSub">সপ্তাহ শুরু রবিবার থেকে · শুক্রবার সাপ্তাহিক ছুটি</p>
+    <div class="cal-controls">
+      <button id="cal-prev" data-i18n="prevMonth">‹ আগের</button>
+      <select id="cal-month" aria-label="month"></select>
+      <select id="cal-year" aria-label="year"></select>
+      <button id="cal-next" data-i18n="nextMonth">পরের ›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--terra)"></span><span data-i18n="legendWeekend">শুক্রবার (সাপ্তাহিক ছুটি)</span></span>
+      <span><span class="sw" style="background:var(--gold)"></span><span data-i18n="legendToday">আজ</span></span>
+      <span><span class="sw" style="background:var(--red)"></span><span data-i18n="legendHoliday">সরকারি ছুটি</span></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="holTitle">২০২৬ সালের সরকারি ছুটি ও উৎসব</h2>
+    <p class="sub" data-i18n="holSub">সরকারি ঘোষণা অনুযায়ী · প্রতিটির বাংলা তারিখ অ্যাপেই গণনা করা</p>
+    <div class="countdown" id="next-holiday"></div>
+    <div class="hol-list" id="hol-list"></div>
+    <p class="footnote" data-i18n="lunarNote">চাঁদ দেখার ভিত্তিতে সরকারি গেজেট অনুযায়ী চান্দ্র তারিখ পরিবর্তন হতে পারে।</p>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="seasonsTitle">বাংলার ঋতু</h2>
+    <p class="sub" data-i18n="seasonsSub">প্রতিটি ঋতু ঠিক দুই বাংলা মাস নিয়ে</p>
+    <div class="season-grid" id="season-grid"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div data-i18n="footerNote">রূপান্তর ২০১৯ সালের সংশোধিত জাতীয় বাংলা বর্ষপঞ্জি অনুসরণ করে। ২০১৯-এর অনেক আগের তারিখ পুরনো পঞ্জিকা থেকে এক দিন এদিক-ওদিক হতে পারে।</div>
+    <div style="margin-top:6px;opacity:.75">Bangla Calendar BD · <span data-i18n="footerOffline">সম্পূর্ণ অফলাইন — কোনো সার্ভার, কোনো ট্র্যাকিং নয়</span></div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   PURE LOGIC — no DOM access. Tested in Node via module.exports.
+   Implements the 2019 revised national Bangla calendar.
+   ============================================================ */
+const MONTHS_EN = ["Boishakh","Joishtho","Asharh","Srabon","Bhadro","Ashwin","Kartik","Agrahayan","Poush","Magh","Falgun","Choitro"];
+const MONTHS_BN = ["বৈশাখ","জ্যৈষ্ঠ","আষাঢ়","শ্রাবণ","ভাদ্র","আশ্বিন","কার্তিক","অগ্রহায়ণ","পৌষ","মাঘ","ফাল্গুন","চৈত্র"];
+const WD_EN = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const WD_BN = ["রবিবার","সোমবার","মঙ্গলবার","বুধবার","বৃহস্পতিবার","শুক্রবার","শনিবার"];
+const WD_SHORT_EN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const WD_SHORT_BN = ["রবি","সোম","মঙ্গল","বুধ","বৃহঃ","শুক্র","শনি"];
+const GREG_MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const GREG_MONTHS_BN = ["জানুয়ারি","ফেব্রুয়ারি","মার্চ","এপ্রিল","মে","জুন","জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"];
+const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+
+function toBnDigits(v){ return String(v).replace(/[0-9]/g, function(ch){ return BN_DIGITS[+ch]; }); }
+function fmtNum(n, lang){ return lang === "bn" ? toBnDigits(n) : String(n); }
+function isLeapGregorian(y){ return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
+/* Falgun of Bangla year B spans Feb–Mar of Gregorian year B+594. */
+function monthLengths(banglaYear){
+  const falgun = isLeapGregorian(banglaYear + 594) ? 30 : 29;
+  return [31,31,31,31,31,31,30,30,30,30,falgun,30];
+}
+const DAY_MS = 86400000;
+function daysBetweenUTC(y1,m1,d1,y2,m2,d2){
+  return Math.round((Date.UTC(y2,m2-1,d2) - Date.UTC(y1,m1-1,d1)) / DAY_MS);
+}
+function daysInGregorianMonth(y,m){
+  return new Date(Date.UTC(y, m, 0)).getUTCDate();
+}
+function validGregorian(y,m,d){
+  return Number.isInteger(y) && Number.isInteger(m) && Number.isInteger(d) &&
+    y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= daysInGregorianMonth(y,m);
+}
+/* Gregorian -> Bangla. 1 Boishakh = April 14 every year. */
+function gregorianToBangla(y, m, d){
+  if (!validGregorian(y,m,d)) throw new Error("invalid-gregorian");
+  const onOrAfter = (m > 4) || (m === 4 && d >= 14);
+  const B = onOrAfter ? y - 593 : y - 594;
+  const g0 = B + 593;
+  const offset = daysBetweenUTC(g0,4,14, y,m,d);
+  const lens = monthLengths(B);
+  let cum = 0;
+  for (let i = 0; i < 12; i++){
+    if (offset < cum + lens[i]) return { year: B, month: i, day: offset - cum + 1 };
+    cum += lens[i];
+  }
+  throw new Error("out-of-range");
+}
+/* Bangla -> Gregorian. Throws on invalid day for the month (Falgun leap aware). */
+function banglaToGregorian(B, mi, day){
+  if (!Number.isInteger(B) || B < 1300 || B > 1510) throw new Error("invalid-bangla-year");
+  const lens = monthLengths(B);
+  if (!Number.isInteger(mi) || mi < 0 || mi > 11) throw new Error("invalid-bangla-month");
+  if (!Number.isInteger(day) || day < 1 || day > lens[mi]) throw new Error("invalid-bangla-day");
+  const g0 = B + 593;
+  let off = day - 1;
+  for (let i = 0; i < mi; i++) off += lens[i];
+  const t = new Date(Date.UTC(g0, 3, 14) + off * DAY_MS);
+  return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate() };
+}
+/* 0 = Sunday … 6 = Saturday, computed in UTC (no DST issues). */
+function gregorianWeekday(y,m,d){ return new Date(Date.UTC(y,m-1,d)).getUTCDay(); }
+
+const SEASONS = [
+  { bn:"গ্রীষ্ম",  en:"Grishmo",  meaning:"Summer",      emoji:"☀️", months:[0,1],  greg:"Apr 14 – Jun 14" },
+  { bn:"বর্ষা",   en:"Borsha",   meaning:"Monsoon",     emoji:"🌧️", months:[2,3],  greg:"Jun 15 – Aug 16" },
+  { bn:"শরৎ",    en:"Shorot",   meaning:"Autumn",      emoji:"🪷", months:[4,5],  greg:"Aug 17 – Oct 17" },
+  { bn:"হেমন্ত",  en:"Hemonto",  meaning:"Late Autumn", emoji:"🌾", months:[6,7],  greg:"Oct 18 – Dec 16" },
+  { bn:"শীত",    en:"Sheet",    meaning:"Winter",      emoji:"❄️", months:[8,9],  greg:"Dec 17 – Feb 13" },
+  { bn:"বসন্ত",   en:"Boshonto", meaning:"Spring",      emoji:"🌸", months:[10,11],greg:"Feb 14 – Apr 13" }
+];
+function seasonOfBanglaMonth(mi){
+  for (const s of SEASONS) if (s.months.indexOf(mi) !== -1) return s;
+  throw new Error("bad-month");
+}
+
+/* 2026 Bangladesh public holidays — per the official government announcement
+   (verified via The Daily Star). `eo` = declared by executive order. */
+const HOLIDAYS = [
+  { g:"2026-02-04", en:"Shab-e-Barat", bn:"শবে বরাত", eo:true },
+  { g:"2026-02-21", en:"Shaheed Day & International Mother Language Day", bn:"শহীদ দিবস ও আন্তর্জাতিক মাতৃভাষা দিবস", eo:false },
+  { g:"2026-03-17", en:"Shab-e-Qadr", bn:"শবে কদর", eo:true },
+  { g:"2026-03-17", en:"Birthday of Bangabandhu Sheikh Mujibur Rahman", bn:"জাতির পিতা বঙ্গবন্ধু শেখ মুজিবুর রহমানের জন্মবার্ষিকী", eo:false },
+  { g:"2026-03-19", en:"Eid-ul-Fitr holiday", bn:"ঈদুল ফিতর উপলক্ষে ছুটি", eo:true },
+  { g:"2026-03-20", en:"Jumatul Bida", bn:"জুমাতুল বিদা", eo:false },
+  { g:"2026-03-20", en:"Eid-ul-Fitr holiday", bn:"ঈদুল ফিতর উপলক্ষে ছুটি", eo:true },
+  { g:"2026-03-21", en:"Eid ul-Fitr", bn:"ঈদুল ফিতর", eo:false },
+  { g:"2026-03-22", en:"Eid-ul-Fitr holiday", bn:"ঈদুল ফিতর উপলক্ষে ছুটি", eo:true },
+  { g:"2026-03-23", en:"Eid-ul-Fitr holiday", bn:"ঈদুল ফিতর উপলক্ষে ছুটি", eo:true },
+  { g:"2026-03-26", en:"Independence and National Day", bn:"স্বাধীনতা ও জাতীয় দিবস", eo:false },
+  { g:"2026-04-14", en:"Pohela Boishakh", bn:"পহেলা বৈশাখ", eo:true },
+  { g:"2026-05-01", en:"May Day", bn:"মে দিবস", eo:false },
+  { g:"2026-05-01", en:"Buddha Purnima", bn:"বুদ্ধ পূর্ণিমা", eo:false },
+  { g:"2026-05-26", en:"Eid-ul-Adha holiday", bn:"ঈদুল আযহা উপলক্ষে ছুটি", eo:true },
+  { g:"2026-05-27", en:"Eid-ul-Adha holiday", bn:"ঈদুল আযহা উপলক্ষে ছুটি", eo:true },
+  { g:"2026-05-28", en:"Eid ul-Adha", bn:"ঈদুল আযহা", eo:false },
+  { g:"2026-05-29", en:"Eid-ul-Adha holiday", bn:"ঈদুল আযহা উপলক্ষে ছুটি", eo:true },
+  { g:"2026-05-30", en:"Eid-ul-Adha holiday", bn:"ঈদুল আযহা উপলক্ষে ছুটি", eo:true },
+  { g:"2026-05-31", en:"Eid-ul-Adha holiday", bn:"ঈদুল আযহা উপলক্ষে ছুটি", eo:true },
+  { g:"2026-06-26", en:"Ashura", bn:"আশুরা", eo:true },
+  { g:"2026-08-05", en:"Mass Uprising Day", bn:"গণঅভ্যুত্থান দিবস", eo:false },
+  { g:"2026-08-26", en:"Eid-e-Miladunnabi", bn:"ঈদে মিলাদুন্নবী", eo:false },
+  { g:"2026-09-04", en:"Janmashtami", bn:"জন্মাষ্টমী", eo:false },
+  { g:"2026-10-20", en:"Durga Puja (Mahanabami)", bn:"দুর্গাপূজা (মহানবমী)", eo:true },
+  { g:"2026-10-21", en:"Durga Puja (Bijoya Dashami)", bn:"দুর্গাপূজা (বিজয়া দশমী)", eo:false },
+  { g:"2026-12-16", en:"Victory Day", bn:"বিজয় দিবস", eo:false },
+  { g:"2026-12-25", en:"Christmas Day", bn:"বড়দিন", eo:false }
+];
+function parseISODate(s){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||"").trim());
+  if (!m) return null;
+  const y=+m[1], mo=+m[2], d=+m[3];
+  return validGregorian(y,mo,d) ? { y:y, m:mo, d:d } : null;
+}
+function holidayBangla(h){
+  const p = parseISODate(h.g);
+  return gregorianToBangla(p.y, p.m, p.d);
+}
+function isoOf(y,m,d){
+  return y + "-" + String(m).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+}
+/* Famous anchors — Gregorian side fixed, Bangla side computed live by the app. */
+const FUN_FACTS = ["2026-02-21","2026-04-14","2026-12-16","2026-03-26","2026-12-25","1952-02-21"];
+
+const BC_API = {
+  MONTHS_EN, MONTHS_BN, WD_EN, WD_BN, WD_SHORT_EN, WD_SHORT_BN,
+  GREG_MONTHS_EN, GREG_MONTHS_BN, SEASONS, HOLIDAYS, FUN_FACTS,
+  toBnDigits, fmtNum, isLeapGregorian, monthLengths, validGregorian,
+  gregorianToBangla, banglaToGregorian, gregorianWeekday,
+  seasonOfBanglaMonth, parseISODate, holidayBangla, isoOf
+};
+
+/* ============================================================
+   UI — browser only
+   ============================================================ */
+if (typeof document !== "undefined" && typeof window !== "undefined") {
+
+const STRINGS = {
+en: {
+  appTitle:"Bangla Calendar BD", tagline:"The revised national Bangla calendar (বঙ্গাব্দ) — holidays & seasons of Bangladesh",
+  today:"Today", funFactsTitle:"Did you know?", funFactsSub:"Famous dates and their Bangla forms",
+  convTitle:"Date converter", convSub:"Gregorian ↔ Bangla — verified both ways",
+  g2bTitle:"Gregorian → Bangla", b2gTitle:"Bangla → Gregorian",
+  gregDateLabel:"Gregorian date", convertBtn:"Convert",
+  banglaMonthLabel:"Bangla month", banglaDayLabel:"Day", banglaYearLabel:"Bangla year",
+  errInvalidDate:"Please enter a valid date (YYYY-MM-DD, years 1900–2100).",
+  errInvalidBangla:"Invalid Bangla date — the day is outside this month (Falgun has 29 or 30 days).",
+  errInvalidBanglaYear:"Bangla year must be between 1300 and 1510.",
+  emptyConvert:"Enter a date and press Convert.",
+  calTitle:"Bangla month calendar", calSub:"Week starts Sunday · Friday is the weekly holiday",
+  prevMonth:"‹ Prev", nextMonth:"Next ›",
+  legendWeekend:"Friday (weekly holiday)", legendToday:"Today", legendHoliday:"Public holiday",
+  holTitle:"2026 public holidays & festivals", holSub:"Per the official government announcement · each Bangla date computed by this app",
+  nextUp:"Next holiday", daysAway:"{n} days away", daysAway1:"Tomorrow", daysAway0:"Today!",
+  eoBadge:"Executive order",
+  lunarNote:"Lunar dates follow the official 2026 government gazette and may shift with moon sighting.",
+  seasonsTitle:"Seasons of Bengal", seasonsSub:"Each ritu spans exactly two Bangla months",
+  monthsOf:"Months", approxGreg:"Approx. Gregorian",
+  footerNote:"Conversion follows the 2019 revised national Bangla calendar. Dates long before 2019 may differ by a day from the old calendar.",
+  footerOffline:"Fully offline — no servers, no tracking",
+  seasonIs:"Season"
+},
+bn: {
+  appTitle:"বাংলা ক্যালেন্ডার বিডি", tagline:"সংশোধিত জাতীয় বাংলা বর্ষপঞ্জি (বঙ্গাব্দ) — বাংলাদেশের ছুটির দিন ও ঋতু",
+  today:"আজ", funFactsTitle:"জানেন কি?", funFactsSub:"ইতিহাসের বিখ্যাত তারিখগুলোর বাংলা রূপ",
+  convTitle:"তারিখ রূপান্তর", convSub:"গ্রেগরীয় ↔ বাংলা — দুই দিকেই যাচাইকৃত",
+  g2bTitle:"গ্রেগরীয় → বাংলা", b2gTitle:"বাংলা → গ্রেগরীয়",
+  gregDateLabel:"গ্রেগরীয় তারিখ", convertBtn:"রূপান্তর করুন",
+  banglaMonthLabel:"বাংলা মাস", banglaDayLabel:"দিন", banglaYearLabel:"বাংলা বছর",
+  errInvalidDate:"সঠিক তারিখ দিন (YYYY-MM-DD, সাল ১৯০০–২১০০)।",
+  errInvalidBangla:"অবৈধ বাংলা তারিখ — দিনটি এই মাসের বাইরে (ফাল্গুন ২৯ বা ৩০ দিনের)।",
+  errInvalidBanglaYear:"বাংলা সাল ১৩০০ থেকে ১৫১০-এর মধ্যে হতে হবে।",
+  emptyConvert:"তারিখ দিয়ে রূপান্তর চাপুন।",
+  calTitle:"বাংলা মাসের ক্যালেন্ডার", calSub:"সপ্তাহ শুরু রবিবার থেকে · শুক্রবার সাপ্তাহিক ছুটি",
+  prevMonth:"‹ আগের", nextMonth:"পরের ›",
+  legendWeekend:"শুক্রবার (সাপ্তাহিক ছুটি)", legendToday:"আজ", legendHoliday:"সরকারি ছুটি",
+  holTitle:"২০২৬ সালের সরকারি ছুটি ও উৎসব", holSub:"সরকারি ঘোষণা অনুযায়ী · প্রতিটি বাংলা তারিখ এই অ্যাপেই গণনা করা",
+  nextUp:"পরবর্তী ছুটি", daysAway:"{n} দিন বাকি", daysAway1:"আগামীকাল", daysAway0:"আজ!",
+  eoBadge:"নির্বাহী আদেশে",
+  lunarNote:"চাঁদ দেখার ভিত্তিতে সরকারি গেজেট অনুযায়ী চান্দ্র তারিখ পরিবর্তন হতে পারে।",
+  seasonsTitle:"বাংলার ঋতু", seasonsSub:"প্রতিটি ঋতু ঠিক দুই বাংলা মাস নিয়ে",
+  monthsOf:"মাসসমূহ", approxGreg:"সম্ভাব্য গ্রেগরীয়",
+  footerNote:"রূপান্তর ২০১৯ সালের সংশোধিত জাতীয় বাংলা বর্ষপঞ্জি অনুসরণ করে। ২০১৯-এর অনেক আগের তারিখ পুরনো পঞ্জিকা থেকে এক দিন এদিক-ওদিক হতে পারে।",
+  footerOffline:"সম্পূর্ণ অফলাইন — কোনো সার্ভার, কোনো ট্র্যাকিং নয়",
+  seasonIs:"ঋতু"
+}};
+
+const state = {
+  lang: "bn",
+  asof: null,          // {y,m,d}
+  calMonth: 0, calYear: 1433,
+  holBangla: []        // holidays with computed Bangla dates
+};
+function t(key){ return STRINGS[state.lang][key] || key; }
+function monthName(mi){ return state.lang === "bn" ? MONTHS_BN[mi] : MONTHS_EN[mi]; }
+function wdName(wi){ return state.lang === "bn" ? WD_BN[wi] : WD_EN[wi]; }
+function gregMonthName(m){ return state.lang === "bn" ? GREG_MONTHS_BN[m-1] : GREG_MONTHS_EN[m-1]; }
+function banglaDateStr(b){ return fmtNum(b.day,state.lang)+" "+monthName(b.month)+" "+fmtNum(b.year,state.lang); }
+function banglaDateCanonical(b){ return b.day+" "+MONTHS_EN[b.month]+" "+b.year; }
+function gregDateStr(g){
+  return wdName(gregorianWeekday(g.y,g.m,g.d))+", "+fmtNum(g.d,state.lang)+" "+gregMonthName(g.m)+" "+fmtNum(g.y,state.lang);
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function getAsof(){
+  try{
+    const p = new URLSearchParams(window.location.search).get("asof");
+    const parsed = parseISODate(p);
+    if (parsed) return parsed;
+  }catch(e){}
+  const n = new Date();
+  return { y:n.getFullYear(), m:n.getMonth()+1, d:n.getDate() };
+}
+
+function renderHero(){
+  const a = state.asof;
+  const b = gregorianToBangla(a.y,a.m,a.d);
+  const s = seasonOfBanglaMonth(b.month);
+  document.getElementById("hero-bangla-date").textContent = banglaDateStr(b);
+  document.getElementById("hero-bangla-weekday").textContent = wdName(gregorianWeekday(a.y,a.m,a.d));
+  document.getElementById("hero-gregorian").textContent = gregDateStr(a);
+  const sEl = document.getElementById("hero-season");
+  sEl.textContent = state.lang === "bn"
+    ? s.emoji+" "+s.bn+" ("+s.en+")"
+    : s.emoji+" "+s.en+" ("+s.bn+") · "+s.meaning;
+  sEl.setAttribute("data-season-en", s.en);
+}
+
+function renderFacts(){
+  const box = document.getElementById("facts");
+  box.innerHTML = FUN_FACTS.map(function(g){
+    const p = parseISODate(g);
+    const b = gregorianToBangla(p.y,p.m,p.d);
+    const left = fmtNum(p.d,state.lang)+" "+gregMonthName(p.m)+" "+fmtNum(p.y,state.lang);
+    return '<div class="fact">'+esc(left)+' = <b>'+esc(banglaDateStr(b))+'</b></div>';
+  }).join("");
+}
+
+function showError(boxId, msg){
+  const box = document.getElementById(boxId);
+  box.classList.remove("empty");
+  box.innerHTML = '<div class="error">'+esc(msg)+'</div>';
+}
+
+function convertG2B(){
+  const box = document.getElementById("g2b-result");
+  const val = document.getElementById("g-date").value;
+  const p = parseISODate(val);
+  if (!p){ showError("g2b-result", t("errInvalidDate")); return; }
+  const b = gregorianToBangla(p.y,p.m,p.d);
+  const s = seasonOfBanglaMonth(b.month);
+  box.classList.remove("empty");
+  box.setAttribute("data-bangla", banglaDateCanonical(b));
+  box.innerHTML =
+    '<div class="big">'+esc(banglaDateStr(b))+'</div>'+
+    '<div class="meta">'+esc(wdName(gregorianWeekday(p.y,p.m,p.d)))+
+      ' · '+t("seasonIs")+': '+esc(state.lang==="bn"?s.bn:s.en)+'</div>';
+}
+
+function convertB2G(){
+  const box = document.getElementById("b2g-result");
+  const mi = parseInt(document.getElementById("b-month").value,10);
+  const day = parseInt(document.getElementById("b-day").value,10);
+  const year = parseInt(document.getElementById("b-year").value,10);
+  if (!Number.isInteger(year) || year < 1300 || year > 1510){ showError("b2g-result", t("errInvalidBanglaYear")); return; }
+  let g;
+  try { g = banglaToGregorian(year, mi, day); }
+  catch(e){ showError("b2g-result", t("errInvalidBangla")); return; }
+  box.classList.remove("empty");
+  box.setAttribute("data-iso", isoOf(g.y,g.m,g.d));
+  box.innerHTML =
+    '<div class="big">'+esc(gregDateStr(g))+'</div>'+
+    '<div class="meta">ISO: '+esc(isoOf(g.y,g.m,g.d))+'</div>';
+}
+
+function buildHolidayIndex(){
+  state.holBangla = HOLIDAYS.map(function(h){
+    const b = holidayBangla(h);
+    return { h:h, b:b, key:b.year+"-"+b.month+"-"+b.day };
+  });
+}
+
+function renderCalendar(){
+  const monthSel = document.getElementById("cal-month");
+  const yearSel = document.getElementById("cal-year");
+  // options
+  if (monthSel.options.length !== 12){
+    monthSel.innerHTML = MONTHS_EN.map(function(_,i){
+      return '<option value="'+i+'">'+esc(monthName(i))+'</option>';
+    }).join("");
+  } else {
+    for (let i=0;i<12;i++) monthSel.options[i].text = monthName(i);
+  }
+  const years = [1431,1432,1433,1434];
+  if (yearSel.options.length !== years.length){
+    yearSel.innerHTML = years.map(function(y){
+      return '<option value="'+y+'">'+esc(fmtNum(y,state.lang))+'</option>';
+    }).join("");
+  } else {
+    for (let i=0;i<years.length;i++) yearSel.options[i].text = fmtNum(years[i],state.lang);
+  }
+  monthSel.value = String(state.calMonth);
+  yearSel.value = String(state.calYear);
+
+  const mi = state.calMonth, B = state.calYear;
+  const lens = monthLengths(B);
+  const nDays = lens[mi];
+  const g1 = banglaToGregorian(B, mi, 1);
+  const firstWd = gregorianWeekday(g1.y, g1.m, g1.d); // 0=Sunday
+  const asofB = gregorianToBangla(state.asof.y, state.asof.m, state.asof.d);
+  const holByDay = {};
+  state.holBangla.forEach(function(e){
+    if (e.b.year===B && e.b.month===mi){
+      (holByDay[e.b.day] = holByDay[e.b.day] || []).push(e.h);
+    }
+  });
+  const shorts = state.lang==="bn" ? WD_SHORT_BN : WD_SHORT_EN;
+  let html = "";
+  for (let w=0; w<7; w++) html += '<div class="cell wd'+(w===5?" fri":"")+'">'+esc(shorts[w])+'</div>';
+  for (let k=0; k<firstWd; k++) html += '<div class="cell blank"></div>';
+  for (let d=1; d<=nDays; d++){
+    const wd = (firstWd + d - 1) % 7;
+    const cls = ["cell","day"];
+    if (wd===5) cls.push("fri");
+    if (B===asofB.year && mi===asofB.month && d===asofB.day) cls.push("today");
+    const hols = holByDay[d] || [];
+    const dot = hols.length ? '<span class="dot" title="'+esc(hols.map(function(h){return state.lang==="bn"?h.bn:h.en;}).join("; "))+'"></span>' : "";
+    html += '<div class="'+cls.join(" ")+'" data-day="'+d+'">'+esc(fmtNum(d,state.lang))+dot+'</div>';
+  }
+  document.getElementById("cal-grid").innerHTML = html;
+}
+
+function renderHolidays(){
+  const a = state.asof;
+  const asofISO = isoOf(a.y,a.m,a.d);
+  const upcoming = state.holBangla.filter(function(e){ return e.h.g >= asofISO; });
+  const box = document.getElementById("next-holiday");
+  if (upcoming.length){
+    const nx = upcoming[0];
+    const diff = daysBetweenUTC(a.y,a.m,a.d, +nx.h.g.slice(0,4), +nx.h.g.slice(5,7), +nx.h.g.slice(8,10));
+    const away = diff===0 ? t("daysAway0") : diff===1 ? t("daysAway1") : t("daysAway").replace("{n}", fmtNum(diff,state.lang));
+    const nm = state.lang==="bn" ? nx.h.bn : nx.h.en;
+    box.setAttribute("data-next-date", nx.h.g);
+    box.setAttribute("data-days", String(diff));
+    box.innerHTML = '<div>'+esc(t("nextUp"))+'</div>'+
+      '<div class="big">'+esc(nm)+'</div>'+
+      '<div class="when">'+esc(gregDateStr(parseISODate(nx.h.g)))+' · '+esc(banglaDateStr(nx.b))+' · <b>'+esc(away)+'</b></div>';
+  } else {
+    box.innerHTML = '<div class="big">—</div>';
+  }
+  const list = document.getElementById("hol-list");
+  list.innerHTML = state.holBangla.map(function(e){
+    const p = parseISODate(e.h.g);
+    const nm = state.lang==="bn" ? e.h.bn : e.h.en;
+    const eo = e.h.eo ? '<span class="eo">'+esc(t("eoBadge"))+'</span>' : '';
+    return '<div class="hol-row" data-holiday-en="'+esc(e.h.en)+'" data-bangla="'+esc(banglaDateCanonical(e.b))+'">'+
+      '<div class="name">'+esc(nm)+eo+'</div>'+
+      '<div class="dates">'+esc(gregDateStr(p))+'<br>'+esc(banglaDateStr(e.b))+'</div>'+
+    '</div>';
+  }).join("");
+}
+
+function renderSeasons(){
+  const grid = document.getElementById("season-grid");
+  grid.innerHTML = SEASONS.map(function(s){
+    const nm = state.lang==="bn" ? s.bn+" ("+s.en+")" : s.en+" ("+s.bn+") · "+s.meaning;
+    const mons = s.months.map(monthName).join(state.lang==="bn" ? ", " : ", ");
+    return '<div class="season"><div class="em">'+s.emoji+'</div>'+
+      '<div class="bn">'+esc(state.lang==="bn"?s.bn:s.en)+'</div>'+
+      '<div class="en">'+esc(state.lang==="bn"?s.en+" · "+s.meaning:s.bn)+'</div>'+
+      '<div class="mon"><b>'+esc(t("monthsOf"))+':</b> '+esc(mons)+'</div>'+
+      '<div class="gr">'+esc(t("approxGreg"))+': '+esc(s.greg)+'</div></div>';
+  }).join("");
+}
+
+function renderBMonthSelect(){
+  const sel = document.getElementById("b-month");
+  sel.innerHTML = MONTHS_EN.map(function(_,i){
+    return '<option value="'+i+'">'+esc(monthName(i))+'</option>';
+  }).join("");
+}
+
+function applyStrings(){
+  document.querySelectorAll("[data-i18n]").forEach(function(el){
+    const k = el.getAttribute("data-i18n");
+    if (STRINGS[state.lang][k]) el.textContent = STRINGS[state.lang][k];
+  });
+  document.getElementById("lang-toggle").textContent = state.lang==="bn" ? "EN" : "বাংলা";
+  document.documentElement.lang = state.lang;
+}
+
+function renderAll(){
+  applyStrings();
+  renderHero();
+  renderFacts();
+  renderBMonthSelect();
+  renderCalendar();
+  renderHolidays();
+  renderSeasons();
+}
+
+function setLang(l){
+  state.lang = l;
+  try{ window.localStorage.setItem("bcbd-lang", l); }catch(e){}
+  renderAll();
+}
+
+function init(){
+  let saved = null;
+  try{ saved = window.localStorage.getItem("bcbd-lang"); }catch(e){}
+  state.lang = (saved==="en"||saved==="bn") ? saved : "bn";
+  state.asof = getAsof();
+  const ab = gregorianToBangla(state.asof.y, state.asof.m, state.asof.d);
+  state.calMonth = ab.month; state.calYear = ab.year;
+  buildHolidayIndex();
+  document.getElementById("lang-toggle").addEventListener("click", function(){
+    setLang(state.lang==="bn" ? "en" : "bn");
+  });
+  document.getElementById("g2b-btn").addEventListener("click", convertG2B);
+  document.getElementById("b2g-btn").addEventListener("click", convertB2G);
+  document.getElementById("cal-month").addEventListener("change", function(e){
+    state.calMonth = parseInt(e.target.value,10); renderCalendar();
+  });
+  document.getElementById("cal-year").addEventListener("change", function(e){
+    state.calYear = parseInt(e.target.value,10); renderCalendar();
+  });
+  document.getElementById("cal-prev").addEventListener("click", function(){
+    state.calMonth--; if (state.calMonth<0){ state.calMonth=11; state.calYear--; }
+    if (state.calYear<1431) state.calYear=1431;
+    renderCalendar();
+  });
+  document.getElementById("cal-next").addEventListener("click", function(){
+    state.calMonth++; if (state.calMonth>11){ state.calMonth=0; state.calYear++; }
+    if (state.calYear>1434) state.calYear=1434;
+    renderCalendar();
+  });
+  renderAll();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+}
+if (typeof module !== "undefined" && module.exports) module.exports = BC_API;
+</script>
+</body>
+</html>
